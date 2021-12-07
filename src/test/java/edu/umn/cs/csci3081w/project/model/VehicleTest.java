@@ -25,6 +25,12 @@ public class VehicleTest {
     List<Stop> stopsIn = new ArrayList<Stop>();
     Stop stop1 = new Stop(0, "test stop 1", new Position(-93.243774, 44.972392));
     Stop stop2 = new Stop(1, "test stop 2", new Position(-93.235071, 44.973580));
+
+    Passenger testPassenger1 = new Passenger(3, "testPassenger1");
+    Passenger testPassenger2 = new Passenger(2, "testPassenger2");
+    stop2.addPassengers(testPassenger1);
+    stop2.addPassengers(testPassenger2);
+
     stopsIn.add(stop1);
     stopsIn.add(stop2);
     List<Double> distancesIn = new ArrayList<>();
@@ -124,7 +130,40 @@ public class VehicleTest {
 
     testVehicle.move();
     assertEquals(null, testVehicle.getNextStop());
+  }
 
+  /**
+   * Tests condition for move for some edge cases.
+   * Some of them include larger distance remaining amounts and negative speed.
+   */
+  @Test
+  public void testMoveEdgeCases () {
+    testVehicle.move();
+    testVehicle.setDistanceRemaining(5.0);
+    assertEquals(5.0, testVehicle.getDistanceRemaining());
+    testVehicle.move();
+    testVehicle.move();
+    testVehicle.move();
+    assertEquals(2.0, testVehicle.getDistanceRemaining());
+    testVehicle.setSpeed(-5.0);
+    testVehicle.move();
+    assertEquals(2.0, testVehicle.getDistanceRemaining());
+    testVehicle.move();
+    assertEquals(2.0, testVehicle.getDistanceRemaining());
+
+  }
+
+  /**
+   * Checking remaining distance if trip is completed.
+   */
+  @Test
+  public void testMoveTripCompleted () {
+    testVehicle.move();
+    testVehicle.move();
+    testVehicle.move();
+    testVehicle.move();
+    testVehicle.move();
+    assertEquals(999.0, testVehicle.getDistanceRemaining());
   }
 
   /**
@@ -154,6 +193,40 @@ public class VehicleTest {
   }
 
   /**
+   * Tests if update function works properly if there are passengers on stops.
+   */
+  @Test
+  public void testUpdateWithPassengers() {
+    assertEquals("test stop 2", testVehicle.getNextStop().getName());
+    assertEquals(1, testVehicle.getNextStop().getId());
+
+    testVehicle.update();
+    assertEquals(2, testVehicle.getPassengers().size());
+    assertEquals(3, testVehicle.getPassengers().get(0).getDestination());
+    assertEquals(1, testVehicle.getPassengers().get(0).getTimeOnVehicle());
+    assertEquals(2, testVehicle.getPassengers().get(1).getDestination());
+    assertEquals(1, testVehicle.getPassengers().get(1).getTimeOnVehicle());
+
+    testVehicle.update();
+    assertEquals(2, testVehicle.getPassengers().size());
+  }
+
+  /**
+   * Tests if update function works properly if there is an issue on the line.
+   */
+  @Test
+  public void testUpdateWithIssue() {
+    testVehicle.update();
+    assertEquals("test stop 1", testVehicle.getNextStop().getName());
+    assertEquals(0, testVehicle.getNextStop().getId());
+
+    testVehicle.getLine().createIssue();
+    testVehicle.update();
+    assertEquals("test stop 1", testVehicle.getNextStop().getName());
+    assertEquals(0, testVehicle.getNextStop().getId());
+  }
+
+  /**
    * Test to see if observer got attached.
    */
   @Test
@@ -169,7 +242,7 @@ public class VehicleTest {
         + "-----------------------------" + System.lineSeparator()
         + "* Type: " + System.lineSeparator()
         + "* Position: (-93.235071,44.973580)" + System.lineSeparator()
-        + "* Passengers: 0" + System.lineSeparator()
+        + "* Passengers: 2" + System.lineSeparator()
         + "* CO2: 0" + System.lineSeparator();
     assertEquals(expectedText, observedText);
   }

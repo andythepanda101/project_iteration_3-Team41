@@ -67,6 +67,10 @@ public abstract class Vehicle implements VehicleObserver {
     return speed;
   }
 
+  public void setSpeed(double speed) {
+    this.speed = speed;
+  }
+
   public PassengerLoader getPassengerLoader() {
     return loader;
   }
@@ -237,6 +241,10 @@ public abstract class Vehicle implements VehicleObserver {
 
   public double getDistanceRemaining() {
     return distanceRemaining;
+  }
+
+  public void setDistanceRemaining(double distanceRemaining) {
+    this.distanceRemaining = distanceRemaining;
   }
 
   /**

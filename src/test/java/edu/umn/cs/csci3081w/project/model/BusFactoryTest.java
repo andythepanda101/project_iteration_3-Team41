@@ -13,6 +13,9 @@ public class BusFactoryTest {
   private BusFactory busFactoryDay;
   private BusFactory busFactoryNight;
 
+  /**
+   * Setup operations before each test runs.
+   */
   @BeforeEach
   public void setUp() {
     storageFacility = new StorageFacility(3, 2, 0, 0);

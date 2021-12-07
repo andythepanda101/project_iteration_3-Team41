@@ -1,17 +1,21 @@
 package edu.umn.cs.csci3081w.project.model;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TrainFactoryTest {
   private StorageFacility storageFacility;
   private TrainFactory trainFactoryDay;
   private TrainFactory trainFactoryNight;
 
+  /**
+   * Setup operations before each test runs.
+   */
   @BeforeEach
   public void setUp() {
     storageFacility = new StorageFacility(0, 0, 3, 3);

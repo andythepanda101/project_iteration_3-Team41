@@ -1,13 +1,21 @@
 package edu.umn.cs.csci3081w.project.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 import com.google.gson.JsonObject;
+import edu.umn.cs.csci3081w.project.webserver.WebServerSession;
 import java.util.ArrayList;
 import java.util.List;
+import javax.websocket.Session;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 public class VehicleTest {
 
@@ -21,7 +29,6 @@ public class VehicleTest {
    */
   @BeforeEach
   public void setUp() {
-    Vehicle.TESTING = true;
     List<Stop> stopsIn = new ArrayList<Stop>();
     Stop stop1 = new Stop(0, "test stop 1", new Position(-93.243774, 44.972392));
     Stop stop2 = new Stop(1, "test stop 2", new Position(-93.235071, 44.973580));
@@ -137,7 +144,7 @@ public class VehicleTest {
    * Some of them include larger distance remaining amounts and negative speed.
    */
   @Test
-  public void testMoveEdgeCases () {
+  public void testMoveEdgeCases() {
     testVehicle.move();
     testVehicle.setDistanceRemaining(5.0);
     assertEquals(5.0, testVehicle.getDistanceRemaining());
@@ -157,7 +164,7 @@ public class VehicleTest {
    * Checking remaining distance if trip is completed.
    */
   @Test
-  public void testMoveTripCompleted () {
+  public void testMoveTripCompleted() {
     testVehicle.move();
     testVehicle.move();
     testVehicle.move();
@@ -231,20 +238,249 @@ public class VehicleTest {
    */
   @Test
   public void testProvideInfo() {
-    testVehicle.update();
-    testVehicle.provideInfo();
-    JsonObject testOutput = testVehicle.getTestOutput();
-    String command = testOutput.get("command").getAsString();
     String expectedCommand = "observedVehicle";
-    assertEquals(expectedCommand, command);
-    String observedText = testOutput.get("text").getAsString();
     String expectedText = "1" + System.lineSeparator()
         + "-----------------------------" + System.lineSeparator()
         + "* Type: " + System.lineSeparator()
         + "* Position: (-93.235071,44.973580)" + System.lineSeparator()
         + "* Passengers: 2" + System.lineSeparator()
         + "* CO2: 0" + System.lineSeparator();
-    assertEquals(expectedText, observedText);
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+          new VehicleConcreteSubject(webServerSessionSpy);
+    testVehicle.setVehicleSubject(vehicleConcreteSubject);
+    testVehicle.update();
+    testVehicle.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
+  }
+
+  /**
+   * Tests provided info if the vehicle completed the trip.
+   */
+  @Test
+  public void testProvideInfoTripCompleted() {
+    String expectedCommand = "observedVehicle";
+    String expectedText = "";
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+        new VehicleConcreteSubject(webServerSessionSpy);
+    testVehicle.setVehicleSubject(vehicleConcreteSubject);
+    testVehicle.update();
+    testVehicle.update();
+    testVehicle.update();
+    testVehicle.update();
+    testVehicle.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
+  }
+
+  /**
+   * Tests provided info for small bus.
+   */
+  @Test
+  public void testProvideInfoSmallBus() {
+
+    Vehicle smallBus = new SmallBus(1, new Line(10000, "testLine",
+        "VEHICLE_LINE", testRouteOut, testRouteIn,
+        new Issue()), 20, 0.5);
+
+    String expectedCommand = "observedVehicle";
+    String expectedText = "1" + System.lineSeparator()
+        + "-----------------------------" + System.lineSeparator()
+        + "* Type: SMALL_BUS_VEHICLE" + System.lineSeparator()
+        + "* Position: (-93.235071,44.973580)" + System.lineSeparator()
+        + "* Passengers: 2" + System.lineSeparator()
+        + "* CO2: 3" + System.lineSeparator();
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+        new VehicleConcreteSubject(webServerSessionSpy);
+    smallBus.setVehicleSubject(vehicleConcreteSubject);
+    smallBus.update();
+    smallBus.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
+  }
+
+  /**
+   * Tests provided info for large bus.
+   */
+  @Test
+  public void testProvideInfoLargeBus() {
+
+    Vehicle largeBus = new LargeBus(1, new Line(10000, "testLine",
+        "VEHICLE_LINE", testRouteOut, testRouteIn,
+        new Issue()), 80, 0.5);
+
+    String expectedCommand = "observedVehicle";
+    String expectedText = "1" + System.lineSeparator()
+        + "-----------------------------" + System.lineSeparator()
+        + "* Type: LARGE_BUS_VEHICLE" + System.lineSeparator()
+        + "* Position: (-93.235071,44.973580)" + System.lineSeparator()
+        + "* Passengers: 2" + System.lineSeparator()
+        + "* CO2: 5" + System.lineSeparator();
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+        new VehicleConcreteSubject(webServerSessionSpy);
+    largeBus.setVehicleSubject(vehicleConcreteSubject);
+    largeBus.update();
+    largeBus.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
+  }
+
+  /**
+   * Tests provided info for electric train.
+   */
+  @Test
+  public void testProvideInfoElectricTrain() {
+
+    Vehicle electricTrain = new ElectricTrain(1, new Line(10000, "testLine",
+        "VEHICLE_LINE", testRouteOut, testRouteIn,
+        new Issue()), 120, 1);
+
+    String expectedCommand = "observedVehicle";
+    String expectedText = "1" + System.lineSeparator()
+        + "-----------------------------" + System.lineSeparator()
+        + "* Type: ELECTRIC_TRAIN_VEHICLE" + System.lineSeparator()
+        + "* Position: (-93.235071,44.973580)" + System.lineSeparator()
+        + "* Passengers: 2" + System.lineSeparator()
+        + "* CO2: 0" + System.lineSeparator();
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+        new VehicleConcreteSubject(webServerSessionSpy);
+    electricTrain.setVehicleSubject(vehicleConcreteSubject);
+    electricTrain.update();
+    electricTrain.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
+  }
+
+  /**
+   * Tests provided info for diesel train.
+   */
+  @Test
+  public void testProvideInfoDieselTrain() {
+
+    Vehicle dieselTrain = new DieselTrain(1, new Line(10000, "testLine",
+        "VEHICLE_LINE", testRouteOut, testRouteIn,
+        new Issue()), 120, 1);
+
+    String expectedCommand = "observedVehicle";
+    String expectedText = "1" + System.lineSeparator()
+        + "-----------------------------" + System.lineSeparator()
+        + "* Type: DIESEL_TRAIN_VEHICLE" + System.lineSeparator()
+        + "* Position: (-93.235071,44.973580)" + System.lineSeparator()
+        + "* Passengers: 2" + System.lineSeparator()
+        + "* CO2: 10" + System.lineSeparator();
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+        new VehicleConcreteSubject(webServerSessionSpy);
+    dieselTrain.setVehicleSubject(vehicleConcreteSubject);
+    dieselTrain.update();
+    dieselTrain.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
+  }
+
+  /**
+   * Tests provided info for correct CO2 history.
+   */
+  @Test
+  public void testProvideCO2History() {
+
+    Vehicle dieselTrain = new DieselTrain(1, new Line(10000, "testLine",
+        "VEHICLE_LINE", testRouteOut, testRouteIn,
+        new Issue()), 120, 1);
+
+    String expectedCommand = "observedVehicle";
+    String expectedText = "1" + System.lineSeparator()
+        + "-----------------------------" + System.lineSeparator()
+        + "* Type: DIESEL_TRAIN_VEHICLE" + System.lineSeparator()
+        + "* Position: (-93.243774,44.972392)" + System.lineSeparator()
+        + "* Passengers: 2" + System.lineSeparator()
+        + "* CO2: 10, 10, 10" + System.lineSeparator();
+
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+
+    VehicleConcreteSubject vehicleConcreteSubject =
+        new VehicleConcreteSubject(webServerSessionSpy);
+    dieselTrain.setVehicleSubject(vehicleConcreteSubject);
+    dieselTrain.update();
+    dieselTrain.update();
+    dieselTrain.update();
+
+    dieselTrain.provideInfo();
+
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+    verify(webServerSessionSpy).sendJson(messageCaptor.capture());
+    JsonObject message = messageCaptor.getValue();
+
+    assertEquals(expectedCommand, message.get("command").getAsString());
+    assertEquals(expectedText, message.get("text").getAsString());
   }
 
   /**

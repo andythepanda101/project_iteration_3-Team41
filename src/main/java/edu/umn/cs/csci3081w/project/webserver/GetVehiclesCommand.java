@@ -33,7 +33,7 @@ public class GetVehiclesCommand extends SimulatorCommand {
     for (int i = 0; i < vehicles.size(); i++) {
       Vehicle currVehicle = vehicles.get(i);
       // currVehicle needs to be cast as VehicleColorDecorator to access RGBA vals
-      int[] currVehicleRGB = ((VehicleColorDecorator) currVehicle).getRGBValues();
+      int[] currVehiclergb = ((VehicleColorDecorator) currVehicle).getrgbValues();
       int currVehicleAlpha = ((VehicleColorDecorator) currVehicle).getAlphaValue();
       // strip the decorator from currVehicle
       Vehicle currVehicleStripped = ((VehicleColorDecorator) currVehicle).getVehicle();
@@ -58,9 +58,9 @@ public class GetVehiclesCommand extends SimulatorCommand {
       positionJsonObject.addProperty("latitude", currVehicle.getPosition().getLatitude());
       s.add("position", positionJsonObject);
       JsonObject colorJsonObject = new JsonObject();
-      colorJsonObject.addProperty("r", currVehicleRGB[0]);
-      colorJsonObject.addProperty("g", currVehicleRGB[1]);
-      colorJsonObject.addProperty("b", currVehicleRGB[2]);
+      colorJsonObject.addProperty("r", currVehiclergb[0]);
+      colorJsonObject.addProperty("g", currVehiclergb[1]);
+      colorJsonObject.addProperty("b", currVehiclergb[2]);
       colorJsonObject.addProperty("alpha", currVehicleAlpha);
       s.add("color", colorJsonObject);
       vehiclesArray.add(s);

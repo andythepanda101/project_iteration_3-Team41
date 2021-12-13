@@ -28,14 +28,16 @@ public class TrainFactory implements VehicleFactory {
     Vehicle generatedVehicle = null;
 
     if (typeOfVehicle != null && typeOfVehicle.equals(ElectricTrain.ELECTRIC_TRAIN_VEHICLE)) {
-      generatedVehicle = new ElectricTrain(counter.getElectricTrainIdCounterAndIncrement(),
+      generatedVehicle = new GreenColorDecorator(
+          new ElectricTrain(counter.getElectricTrainIdCounterAndIncrement(),
           line, ElectricTrain.CAPACITY,
-          ElectricTrain.SPEED);
+          ElectricTrain.SPEED));
       storageFacility.decrementElectricTrainsNum();
     } else if (typeOfVehicle != null && typeOfVehicle.equals(DieselTrain.DIESEL_TRAIN_VEHICLE)) {
-      generatedVehicle = new DieselTrain(counter.getDieselTrainIdCounterAndIncrement(),
+      generatedVehicle = new YellowColorDecorator(
+          new DieselTrain(counter.getDieselTrainIdCounterAndIncrement(),
           line, DieselTrain.CAPACITY,
-          DieselTrain.SPEED);
+          DieselTrain.SPEED));
       storageFacility.decrementDieselTrainsNum();
     }
 

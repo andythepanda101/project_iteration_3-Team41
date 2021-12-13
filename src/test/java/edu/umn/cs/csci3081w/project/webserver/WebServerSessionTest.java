@@ -1,11 +1,13 @@
 package edu.umn.cs.csci3081w.project.webserver;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import edu.umn.cs.csci3081w.project.model.PassengerFactory;
 import edu.umn.cs.csci3081w.project.model.RandomPassengerGenerator;
@@ -45,4 +47,5 @@ public class WebServerSessionTest {
     JsonObject commandToClient = messageCaptor.getValue();
     assertEquals("2", commandToClient.get("numLines").getAsString());
   }
+
 }

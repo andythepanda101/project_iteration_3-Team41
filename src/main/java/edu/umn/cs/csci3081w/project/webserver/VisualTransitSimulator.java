@@ -156,6 +156,16 @@ public class VisualTransitSimulator {
     return activeVehicles;
   }
 
+  public StorageFacility getStorageFacility() { return storageFacility; }
+
+  public int getTimeElapsed() { return simulationTimeElapsed; }
+
+  public static void setLogging(boolean status) { LOGGING = status; }
+
+  public boolean getLogging() { return LOGGING; }
+
+  public int getNumTimeSteps() { return numTimeSteps; }
+
   /**
    * Registers an observer into the vehicle subject.
    *

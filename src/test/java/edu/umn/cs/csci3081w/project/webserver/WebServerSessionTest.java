@@ -45,4 +45,23 @@ public class WebServerSessionTest {
     JsonObject commandToClient = messageCaptor.getValue();
     assertEquals("2", commandToClient.get("numLines").getAsString());
   }
+
+  /*@Test
+  public void testOnMessageNullCommand() {
+    WebServerSession webServerSessionSpy = spy(WebServerSession.class);
+    doNothing().when(webServerSessionSpy).sendJson(Mockito.isA(JsonObject.class));
+    Session sessionDummy = mock(Session.class);
+    webServerSessionSpy.onOpen(sessionDummy);
+    JsonObject commandFromClient = new JsonObject();
+    commandFromClient.addProperty("command", "penis");
+
+    webServerSessionSpy.onMessage(commandFromClient.toString());
+    ArgumentCaptor<JsonObject> messageCaptor = ArgumentCaptor.forClass(JsonObject.class);
+
+    verify(webServerSessionSpy, never()).sendJson(messageCaptor.capture());
+    JsonObject commandToClient = messageCaptor.getValue();
+    assertEquals("0", commandToClient.get("numLines").getAsString());
+  }
+
+   */
 }

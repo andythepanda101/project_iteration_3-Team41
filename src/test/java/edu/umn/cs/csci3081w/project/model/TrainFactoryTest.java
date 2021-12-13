@@ -81,13 +81,13 @@ public class TrainFactoryTest {
 
     // checking if trains are created according to day strategy
     Vehicle vehicle1 = trainFactoryDay.generateVehicle(line);
-    assertTrue(vehicle1 instanceof ElectricTrain);
+    assertTrue(vehicle1 instanceof GreenColorDecorator);
     vehicle1 = trainFactoryDay.generateVehicle(line);
-    assertTrue(vehicle1 instanceof ElectricTrain);
+    assertTrue(vehicle1 instanceof GreenColorDecorator);
     vehicle1 = trainFactoryDay.generateVehicle(line);
-    assertTrue(vehicle1 instanceof ElectricTrain);
+    assertTrue(vehicle1 instanceof GreenColorDecorator);
     vehicle1 = trainFactoryDay.generateVehicle(line);
-    assertTrue(vehicle1 instanceof DieselTrain);
+    assertTrue(vehicle1 instanceof YellowColorDecorator);
   }
 
   /**
@@ -128,13 +128,13 @@ public class TrainFactoryTest {
 
     // checking if trains are created according to day strategy
     Vehicle vehicle1 = trainFactoryNight.generateVehicle(line);
-    assertTrue(vehicle1 instanceof ElectricTrain);
+    assertTrue(vehicle1 instanceof GreenColorDecorator);
     vehicle1 = trainFactoryNight.generateVehicle(line);
-    assertTrue(vehicle1 instanceof DieselTrain);
+    assertTrue(vehicle1 instanceof YellowColorDecorator);
     vehicle1 = trainFactoryNight.generateVehicle(line);
-    assertTrue(vehicle1 instanceof ElectricTrain);
+    assertTrue(vehicle1 instanceof GreenColorDecorator);
     vehicle1 = trainFactoryNight.generateVehicle(line);
-    assertTrue(vehicle1 instanceof DieselTrain);
+    assertTrue(vehicle1 instanceof YellowColorDecorator);
   }
 
   /**

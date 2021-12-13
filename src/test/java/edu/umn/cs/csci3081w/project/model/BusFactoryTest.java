@@ -81,11 +81,11 @@ public class BusFactoryTest {
 
     // checking if buses are created according to day strategy
     Vehicle vehicle = busFactoryDay.generateVehicle(line);
-    assertTrue(vehicle instanceof LargeBus);
+    assertTrue(vehicle instanceof PinkColorDecorator);
     vehicle = busFactoryDay.generateVehicle(line);
-    assertTrue(vehicle instanceof LargeBus);
+    assertTrue(vehicle instanceof PinkColorDecorator);
     vehicle = busFactoryDay.generateVehicle(line);
-    assertTrue(vehicle instanceof SmallBus);
+    assertTrue(vehicle instanceof MaroonColorDecorator);
   }
 
   /**
@@ -125,13 +125,13 @@ public class BusFactoryTest {
         new Issue());
 
     Vehicle vehicle = busFactoryNight.generateVehicle(line);
-    assertTrue(vehicle instanceof SmallBus);
+    assertTrue(vehicle instanceof MaroonColorDecorator);
     vehicle = busFactoryNight.generateVehicle(line);
-    assertTrue(vehicle instanceof SmallBus);
+    assertTrue(vehicle instanceof MaroonColorDecorator);
     vehicle = busFactoryNight.generateVehicle(line);
-    assertTrue(vehicle instanceof SmallBus);
+    assertTrue(vehicle instanceof MaroonColorDecorator);
     vehicle = busFactoryNight.generateVehicle(line);
-    assertTrue(vehicle instanceof LargeBus);
+    assertTrue(vehicle instanceof PinkColorDecorator);
   }
 
   /**

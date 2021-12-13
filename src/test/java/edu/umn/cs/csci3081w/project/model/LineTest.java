@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 public class LineTest {
 
   private Line testLine;
+  private Line testLineNoIssue;
   private Stop testStop;
 
   /**
@@ -51,6 +52,10 @@ public class LineTest {
     testLine = new Line(0, "testLine", Line.BUS_LINE,
         testRouteOut, testRouteIn,
         new Issue());
+
+    testLineNoIssue = new Line(0, "testLine", Line.BUS_LINE,
+        testRouteOut, testRouteIn,
+        null);
 
   }
 
@@ -174,6 +179,27 @@ public class LineTest {
 
     assertEquals(2, passenger.getWaitAtStop());
 
+    testLineNoIssue.update();
+
+  }
+
+  /**
+   * Tests if update function works properly if issue is null.
+   */
+  @Test
+  public void testUpdateNullIssue() {
+
+    Passenger passenger = new Passenger(1, "test passenger");
+
+    testStop.addPassengers(passenger);
+
+    assertEquals(false, testLineNoIssue.isIssueExist());
+
+    assertEquals(0, passenger.getWaitAtStop());
+
+    testLineNoIssue.update();
+
+    assertEquals(2, passenger.getWaitAtStop());
   }
 
 
@@ -215,7 +241,6 @@ public class LineTest {
    */
   @Test
   public void testIsIssueExist() {
-
     assertEquals(false, testLine.isIssueExist());
 
     testLine.createIssue();

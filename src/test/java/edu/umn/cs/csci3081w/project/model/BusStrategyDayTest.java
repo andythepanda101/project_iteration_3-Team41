@@ -32,4 +32,32 @@ public class BusStrategyDayTest {
       assertEquals(SmallBus.SMALL_BUS_VEHICLE, strToCmpr);
     }
   }
+
+  /**
+   * Testing to get type of vehicle if storage facility reports no buses.
+   */
+  @Test
+  public void testGetTypeOfVehicleNoBuses() {
+    StorageFacility storageFacility = new StorageFacility(0, 0, 0, 0);
+    BusStrategyDay busStrategyDay = new BusStrategyDay();
+    assertEquals(null, busStrategyDay.getTypeOfVehicle(storageFacility));
+  }
+
+  /**
+   * Testing to get type vehicle if there are less vehicles than required for sequence.
+   */
+  @Test
+  public void testGetTypeOfVehicleLessVehicles() {
+    StorageFacility storageFacility = new StorageFacility(0, 2, 0, 0);
+    BusStrategyDay busStrategyDay = new BusStrategyDay();
+    String strToCmpr;
+    for (int i = 0; i < 1; i++) {
+      strToCmpr = busStrategyDay.getTypeOfVehicle(storageFacility);
+      assertEquals(LargeBus.LARGE_BUS_VEHICLE, strToCmpr);
+      strToCmpr = busStrategyDay.getTypeOfVehicle(storageFacility);
+      assertEquals(LargeBus.LARGE_BUS_VEHICLE, strToCmpr);
+      strToCmpr = busStrategyDay.getTypeOfVehicle(storageFacility);
+      assertEquals(null, strToCmpr);
+    }
+  }
 }

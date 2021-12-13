@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Vehicle implements VehicleObserver {
-  public static boolean TESTING = false;
   private int id;
   private int capacity;
   //the speed is in distance over a time unit
@@ -21,8 +20,6 @@ public abstract class Vehicle implements VehicleObserver {
   private Stop nextStop;
   private List<Integer> carbonEmissionHistory;
   private VehicleConcreteSubject vehicleConcreteSubject;
-  private JsonObject testOutput;
-
 
   /**
    * Constructor for a vehicle.
@@ -65,6 +62,10 @@ public abstract class Vehicle implements VehicleObserver {
 
   public double getSpeed() {
     return speed;
+  }
+
+  public void setSpeed(double speed) {
+    this.speed = speed;
   }
 
   public PassengerLoader getPassengerLoader() {
@@ -239,6 +240,10 @@ public abstract class Vehicle implements VehicleObserver {
     return distanceRemaining;
   }
 
+  public void setDistanceRemaining(double distanceRemaining) {
+    this.distanceRemaining = distanceRemaining;
+  }
+
   /**
    * Retrieves the current vehicle information sends the information to the visualization module.
    *
@@ -283,29 +288,18 @@ public abstract class Vehicle implements VehicleObserver {
           + System.lineSeparator());
 
       data.addProperty("text", stringBuilder.toString());
-      if (TESTING) {
-        testOutput = data;
-      } else {
-        vehicleConcreteSubject.getSession().sendJson(data);
-      }
+
+      vehicleConcreteSubject.getSession().sendJson(data);
       tripCompleted = false;
       return tripCompleted;
     } else {
       JsonObject data = new JsonObject();
       data.addProperty("command", "observedVehicle");
       data.addProperty("text", "");
-      if (TESTING) {
-        testOutput = data;
-      } else {
-        vehicleConcreteSubject.getSession().sendJson(data);
-      }
+      vehicleConcreteSubject.getSession().sendJson(data);
       tripCompleted = true;
       return tripCompleted;
     }
-  }
-
-  public JsonObject getTestOutput() {
-    return testOutput;
   }
 
   public void setVehicleSubject(VehicleConcreteSubject vehicleConcreteSubject) {

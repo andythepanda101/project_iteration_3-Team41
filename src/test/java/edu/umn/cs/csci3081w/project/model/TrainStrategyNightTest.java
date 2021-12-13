@@ -30,4 +30,30 @@ public class TrainStrategyNightTest {
       assertEquals(DieselTrain.DIESEL_TRAIN_VEHICLE, strToCmpr);
     }
   }
+
+  /**
+   * Testing to get type of vehicle if storage facility reports no trains.
+   */
+  @Test
+  public void testGetTypeOfVehicleNoTrains() {
+    StorageFacility storageFacility = new StorageFacility(0, 0, 0, 0);
+    TrainStrategyNight trainStrategyNight = new TrainStrategyNight();
+    assertEquals(null, trainStrategyNight.getTypeOfVehicle(storageFacility));
+  }
+
+  /**
+   * Testing to get type vehicle if there are less vehicles than required for sequence.
+   */
+  @Test
+  public void testGetTypeOfVehicleLessVehicles() {
+    StorageFacility storageFacility = new StorageFacility(0, 0, 1, 0);
+    TrainStrategyNight trainStrategyDay = new TrainStrategyNight();
+    String strToCmpr;
+    for (int i = 0; i < 1; i++) {
+      strToCmpr = trainStrategyDay.getTypeOfVehicle(storageFacility);
+      assertEquals(ElectricTrain.ELECTRIC_TRAIN_VEHICLE, strToCmpr);
+      strToCmpr = trainStrategyDay.getTypeOfVehicle(storageFacility);
+      assertEquals(null, strToCmpr);
+    }
+  }
 }

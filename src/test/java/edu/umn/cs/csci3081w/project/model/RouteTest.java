@@ -156,6 +156,59 @@ public class RouteTest {
     }
   }
 
+  /**
+   * Tests reporting functionality if there are multiple stops on a route.
+   */
+  @Test
+  public void testReportMultipleStops() {
+    try {
+      final Charset charset = StandardCharsets.UTF_8;
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      PrintStream testStream = new PrintStream(outputStream, true, charset.name());
+      testRouteIn.report(testStream);
+      outputStream.flush();
+      String data = new String(outputStream.toByteArray(), charset);
+      testStream.close();
+      outputStream.close();
+      String strToCompare =
+          "####Route Info Start####" + System.lineSeparator()
+              + "ID: 11" + System.lineSeparator()
+              + "Name: testRouteIn" + System.lineSeparator()
+              + "Num stops: 3" + System.lineSeparator()
+              + "****Stops Info Start****" + System.lineSeparator()
+              + "++++Next Stop Info Start++++" + System.lineSeparator()
+              + "####Stop Info Start####" + System.lineSeparator()
+              + "ID: 2" + System.lineSeparator()
+              + "Name: test stop 3" + System.lineSeparator()
+              + "Position: 44.975392,-93.226632" + System.lineSeparator()
+              + "****Passengers Info Start****" + System.lineSeparator()
+              + "Num passengers waiting: 0" + System.lineSeparator()
+              + "****Passengers Info End****" + System.lineSeparator()
+              + "####Stop Info End####" + System.lineSeparator()
+              + "++++Next Stop Info End++++" + System.lineSeparator()
+              + "####Stop Info Start####" + System.lineSeparator()
+              + "ID: 1" + System.lineSeparator()
+              + "Name: test stop 2" + System.lineSeparator()
+              + "Position: 44.97358,-93.235071" + System.lineSeparator()
+              + "****Passengers Info Start****" + System.lineSeparator()
+              + "Num passengers waiting: 0" + System.lineSeparator()
+              + "****Passengers Info End****" + System.lineSeparator()
+              + "####Stop Info End####" + System.lineSeparator()
+              + "####Stop Info Start####" + System.lineSeparator()
+              + "ID: 0" + System.lineSeparator()
+              + "Name: test stop 1" + System.lineSeparator()
+              + "Position: 44.972392,-93.243774" + System.lineSeparator()
+              + "****Passengers Info Start****" + System.lineSeparator()
+              + "Num passengers waiting: 0" + System.lineSeparator()
+              + "****Passengers Info End****" + System.lineSeparator()
+              + "####Stop Info End####" + System.lineSeparator()
+              + "****Stops Info End****" + System.lineSeparator()
+              + "####Route Info End####" + System.lineSeparator();
+      assertEquals(data, strToCompare);
+    } catch (IOException ioe) {
+      fail();
+    }
+  }
 
   /**
    * Tests if we properly move through stops to end.
@@ -197,6 +250,30 @@ public class RouteTest {
     assertEquals("test stop 3", testRouteIn.prevStop().getName());
     testRouteIn.nextStop();
     assertEquals("test stop 2", testRouteIn.prevStop().getName());
+  }
+
+  /**
+   * Tests if we can check our previous stop when we're at the end of the route.
+   */
+  @Test
+  public void testPrevStopMaxSize() {
+    // test outbound
+    assertEquals("test stop 1", testRouteOut.prevStop().getName());
+    testRouteOut.nextStop();
+    testRouteOut.nextStop();
+    testRouteOut.nextStop();
+    assertEquals("test stop 3", testRouteOut.prevStop().getName());
+    testRouteOut.nextStop();
+    assertEquals("test stop 3", testRouteOut.prevStop().getName());
+
+    // test inbound
+    assertEquals("test stop 3", testRouteIn.prevStop().getName());
+    testRouteIn.nextStop();
+    testRouteIn.nextStop();
+    testRouteIn.nextStop();
+    assertEquals("test stop 1", testRouteIn.prevStop().getName());
+    testRouteIn.nextStop();
+    assertEquals("test stop 1", testRouteIn.prevStop().getName());
   }
 
   /**

@@ -4,7 +4,7 @@ public class PinkColorDecorator extends VehicleColorDecorator {
 
   public PinkColorDecorator(Vehicle vehicle) {
     super(vehicle);
-    rgbValues = new int[]{239,130,238};
+    RGBValues = new int[]{239,130,238};
   }
 
 }

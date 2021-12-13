@@ -4,7 +4,7 @@ public class MaroonColorDecorator extends VehicleColorDecorator {
 
   public MaroonColorDecorator(Vehicle vehicle) {
     super(vehicle);
-    rgbValues = new int[]{122,0,25};
+    RGBValues = new int[]{122,0,25};
   }
 
 }

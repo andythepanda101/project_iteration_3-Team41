@@ -4,7 +4,7 @@ import java.io.PrintStream;
 
 public abstract class VehicleColorDecorator extends Vehicle {
   protected Vehicle vehicle;
-  protected int[] rgbValues = new int[]{0,0,0};
+  protected int[] RGBValues = new int[]{0,0,0};
   protected int alphaValue = 255;
 
   public VehicleColorDecorator(Vehicle vehicle) {
@@ -20,19 +20,25 @@ public abstract class VehicleColorDecorator extends Vehicle {
     return vehicle.getCurrentCO2Emission();
   }
 
-  public int[] getRgbValues() {
-    return this.rgbValues;
+  public int[] getRGBValues() {
+    return this.RGBValues;
   }
 
   public int getAlphaValue() {
     return this.alphaValue;
   }
 
-  public void setAlphaValue(int val) {
-    this.alphaValue = val;
-  }
-
   public Vehicle getVehicle() {
     return vehicle;
   }
+
+  public void update() {
+    if (vehicle.getLine().isIssueExist()) {
+      alphaValue = 155;
+    } else {
+      alphaValue = 255;
+    }
+    super.update();
+  }
+
 }
